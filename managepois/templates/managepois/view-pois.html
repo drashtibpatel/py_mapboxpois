@@ -1,0 +1,168 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MapBox | View POIs</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {% include "mapboxpois/header.html" %}
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+
+    {% include "mapboxpois/left-navbar.html" %}
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="/" class="brand-link">
+        <img src="{% static 'admin_lte/dist/img/main_log.jpg' %}" alt="AdminLTE Logo"
+          class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">MaxBox POIs</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+            <li class="nav-item has-treeview menu-open">
+              <a href="#" class="nav-link active">
+                <i class="nav-icon fas fa-edit"></i>
+                <p>
+                  Points of Interests
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/admin/add" class="nav-link ">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Add POI</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/admin/view" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>View POIs</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a href="/" class="nav-link">
+                <i class="nav-icon fas fa-file"></i>
+                <p>View MapBox</p>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1></h1>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Points of Interests</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>latitude</th>
+                      <th>longitude</th>
+                      <th>category</th>
+                      <th>geometry</th>
+                      <th>status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {% for mapboxPOI in mapboxPOIs %}
+                    <tr>
+                      <td>{{ mapboxPOI.name }}</td>
+                      <td>{{ mapboxPOI.latitude }}</td>
+                      <td>{{ mapboxPOI.longitude }}</td>
+                      <td>{{ mapboxPOI.category }}</td>
+                      <td>{{ mapboxPOI.geometry }}</td>
+                      {% if mapboxPOI.status == True %}
+                      <td>Active</td>
+                      {% else %}
+                      <td>Inactive</td>
+                      {% endif %}
+                      <td>
+                        <a href="/admin/edit/{{ mapboxPOI.id }}"><span
+                            class="glyphicon glyphicon-pencil">Edit</span></a>
+                        <a href="/admin/delete/{{ mapboxPOI.id }}">Delete</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+
+  </div>
+  <!-- ./wrapper -->
+
+  {% include "mapboxpois/footer.html" %}
+
+
+  <!-- page script -->
+  <script>
+    $(function () {
+      $("#example1").DataTable({
+        "responsive": true,
+        "autoWidth": false,
+      });
+    });
+  </script>
+</body>
+
+</html>

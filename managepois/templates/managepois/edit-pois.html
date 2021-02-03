@@ -1,0 +1,202 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MapBox | Edit POIs</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+
+  {% include "mapboxpois/header.html" %}
+
+</head>
+
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+
+    {% include "mapboxpois/left-navbar.html" %}
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="/" class="brand-link">
+        <img src="{% static 'admin_lte/dist/img/main_log.jpg' %}" alt="AdminLTE Logo"
+          class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">MaxBox POIs</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+            <li class="nav-item has-treeview menu-open">
+              <a href="#" class="nav-link active">
+                <i class="nav-icon fas fa-edit"></i>
+                <p>
+                  Points of Interests
+                  <i class="fas fa-angle-left right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/admin/add" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Add POI</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/admin/view" class="nav-link ">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>View POIs</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a href="/" class="nav-link">
+                <i class="nav-icon fas fa-file"></i>
+                <p>View MapBox</p>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1></h1>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item active"></li>
+              </ol>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+          <div class="row">
+
+            <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Update POI Details</h3>
+                </div>
+                <!-- /.card-header -->
+
+                <!-- form start -->
+                <form method="POST" class="post-form" action="/admin/edit/{{mapboxPOIs.id}}" role="form">
+                  {% csrf_token %}
+
+                  <div class="card-body">
+
+                    {% for fields in form %}
+
+                    {% if fields.name != 'status' %}
+                    <div class="form-group">
+                      <label>{{fields.label}}</label>
+                      {% if fields.errors %}
+                      {% render_field fields class="form-control is-invalid" %}
+                      {% else %}
+                      {% render_field fields class="form-control" %}
+                      {% endif %}
+                      <div class="invalid-feedback">
+                        {{fields.name}} is required.
+                      </div>
+                    </div>
+                    {% endif %}
+
+                    {% if fields.name == 'status' %}
+                    <div class="form-group">
+                      <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                        {% render_field fields class="custom-control-input" %}
+                        <label class="custom-control-label" for="id_status">Status</label>
+                      </div>
+                    </div>
+                    {% endif %}
+
+                    {% endfor %}
+
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <span style="font-weight: 600; margin-left: 15px;">
+                        Note: You can also set co-ordinates by selecting the location from the below Map.
+                      </span>
+                    </div>
+                </form>
+              </div>
+              <!-- /.card -->
+
+            </div>
+
+            <div class="col-md-12">
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Select Location</h3>
+                </div>
+                <div id='map' style="height: 400px;"></div>
+              </div>
+            </div>
+
+          </div>
+          <!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+    </div>
+
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
+
+  <script>
+
+    mapboxgl.accessToken = "{{mapboxToken}}";
+
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11'
+    });
+
+    map.on('click', function (e) {
+      let coordinates = e.lngLat.wrap();
+      console.log(coordinates)
+      document.getElementById("id_latitude").value = coordinates.lat;
+      document.getElementById("id_longitude").value = coordinates.lng;
+    });
+
+  </script>
+
+  {% include "mapboxpois/footer.html" %}
+
+</body>
+
+</html>
